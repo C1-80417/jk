@@ -12,7 +12,7 @@ pipeline {
             }
         }
         stage ('push docker image') {
-            stpes {
+            steps {
                 sh '/usr/bin/docker image push amitr999/jenkinsdemo'
             }
         }
