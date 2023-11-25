@@ -1,10 +1,9 @@
 pipeline {
     agent any
-
     stages {
-        stage ('SCM') {
+        stage ('build docker image') {
             steps {
-                git branch: 'main', url: 'https://github.com/C1-80417/jk.git'
+                sh '/usr/bin/docker image build -t amitr999/jenkinsdemo .'
             }
         }
         stage ('docker login') {
@@ -12,25 +11,16 @@ pipeline {
                 sh 'echo dckr_pat_HuaCr3SLfaHxRrIB8bkYEuNF00M | /usr/bin/docker login -u amitr999 --password-stdin'
             }
         }
-        stage ('docker build image') {
-            steps {
-                sh '/usr/bin/docker image build -t amitr999/mywebsite .'
+        stage ('push docker image') {
+            stpes {
+                sh '/usr/bin/docker image push amitr999/jenkinsdemo'
             }
         }
-        stage ('docker push image') {
+        stage ('reload docker service') {
             steps {
-                sh '/usr/bin/docker image push amitr999/mywebsite'
+                sh '/usr/bin/docker service update --image amitr999/jenkinsdemo --force myservice'
             }
         }
-        stage ('docker remove service') {
-            steps {
-                sh '/usr/bin/docker service rm myservice'
-            }
-        }
-        stage ('docker create service') {
-            steps {
-                sh '/usr/bin/docker service create --name myservice -p 9090:80 --replicas 5 amitr999/mywebsite'
-            }
-        }
+
     }
 }
